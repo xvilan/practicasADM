@@ -1,0 +1,377 @@
+---
+title: "Practica2"
+author: "Xosé Manuel Vilán @xvilan"
+date: "12 de marzo de 2017"
+output: 
+  html_document: 
+    fig_caption: yes
+    keep_md: yes
+    number_sections: yes
+    theme: journal
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Introducción
+
+Esta práctica consite en el análisis de componentes principales de tres conjuntos de datos (**ventas**, **sctkp**, **dowjones**). En estadística, el **Análisis de Componentes Principales** (en español *ACP*, en inglés, *PCA*) es una técnica utilizada para reducir la dimensionalidad de un conjunto de datos.
+
+Técnicamente, el ACP busca la proyección según la cual los datos queden mejor representados en términos de mínimos cuadrados. Convierte un conjunto de observaciones de variables posiblemente correlacionadas en un conjunto de valores de variables sin correlación lineal llamadas componentes principales.
+
+Los objetivos del Análisis de Componentes Principales son:  
+
+* Resumir la variación total en una __dimensión menor__.  
+* Identificar fuentes de variación __interpretables__.  
+* Explorar características __inesperadas__ de los datos.  
+
+El ACP se emplea sobre todo en análisis exploratorio de datos y como herramienta de procesado inicial de los datos. El ACP comporta el cálculo de la descomposición en autovalores y autovectores de la matriz de covarianza, normalmente tras centrar los datos en la media de cada atributo. Las componentes principales están basadas en combinaciones lineales de los datos originales centrados $X-\overline{x}$  
+
+***  
+> Nota
+
+Esta página web está escrita usando Markdown y es un [R Notebook](http://rmarkdown.rstudio.com). El notebook está creado con **R-Studio**, que utiliza *knitr* y *pandoc* para exportar el código a multiples formatos, entre ellos *.md*. Utilizando el botón *Code* situado en la parte superior derecha es posible descargar el archivo *.Rmd* y ejecutar los scripts mediante R-Studio desktop.  
+
+***
+
+#Carga de datos
+
+En primer lugar, se carga el archivo [**ventas.txt**](./ventas.txt)  a R-Studio. Debemos indicar previamente a R-Studio, cuál es el directorio de trabajo en el que estará localizado el archivo. 
+
+```{r}
+ventas = read.table('ventas.txt')
+show(ventas)
+```
+  
+Para calcular el número de filas se puede emplear la función _"nrow"_.  
+
+```{r}
+n = nrow(ventas)
+print(c('número de filas=',n))
+```
+
+***  
+
+#Descripción de los datos  
+
+
+Se crea el vector de **medias muestrales _m_**, redondeando a cuatro decimales. El vector de medias muestrales, dada una matriz de datos $X_{n \times p} = (x_{ij})$, el vector de medias muestrales se calcula como:  
+  
+$\overline{x} = \frac{1}{n} X^T 1_n = (\overline{x_j}:j=1,...,p)$ 
+```{r}
+m = round(colMeans(ventas), digits = 4); 
+round(m, digits = 4);
+```
+
+y la matriz de **covarianzas muestrales _S_** , que se calcula como:  
+  
+$S = \frac{1}{n} X^TX-\overline{x} \overline{x}^T = (s_{jk}:j=1,...,p)$  
+```{r}
+S = cov(ventas); 
+round(S, digits = 4);
+```
+
+Se calcula la **Variación Total**, utilizando la función $VT = traza(S)$, en la que se suma la diagonal principal de la matriz de covarianzas muestrales,
+
+```{r}
+vt.ventas= round(sum(diag(S)), digits = 4)
+vt.ventas
+```
+
+Para el cálculo posterior de las variables tipificadas, se calcula la raiz de la diagonal principal de matriz de covarianzas,
+
+```{r}
+round(sqrt(diag(S)), digits = 4)
+```
+
+Ahora calculamos la **matriz de correlación _R_**,cuya diagonal principal será de unos. Si $D = diag(S)$ y $d = diag(D^{^-1/_2})$ entonces la matriz de correlaciones se calcularía como:  
+  
+    
+$R = D^{^-1/_2}\times S \times D^{^-1/_2} = S \times dd^T = (r_{jk}=\frac{s_{jk}}{\sqrt{s_{jj}s_{kk}}})$   
+
+```{r}
+R = cor(ventas); 
+round(R, digits = 4)
+```
+
+Se calculan las **correlaciones mínima y máxima**. Para la máxima  previamente se resta una matriz identidad de tamaño **n**, para que no se utilicen los valores iguales a uno,
+
+```{r}
+round(c(min(R),max(R - diag(ncol(ventas)))), digits = 4);
+```
+
+##Gráfico
+
+Finalmente, en este apartado de descripción de los datos, se genera un gráfico de tipo **Matriz de Nube Puntos** o *scatter plot matrix* usando la función *"plot* con unos determinados parámetros opcionales de salida gráfica.
+
+```{r}
+plot(ventas,pch = 19,cex = 1,upper.panel = NULL,col = 'blue', 
+main = 'Datos de Ventas',cex.main = 1.4,gap = .15,cex.labels = 2,font.labels = 2)
+
+```
+  
+***  
+
+#Componentes principales 
+
+El software R-Studio incluye en el paquete *stats* la función *"princomp"*, que se utiliza en el análisis de componentes principales. Toma como argumento la matriz de datos y devuelve un vector con siete elementos como respuesta:
+
+Elemento     |Descripción
+-------------|-----------
+$sdev        |Las desviaciones estándar de las componentes principales.
+$loadings    |Matiz de autovectores y matriz de proporciones
+$center      |Los valores medios que se restaron
+$scale       |Las escalas aplicadas a cada variable
+$n.obs       |El número de observaciones
+$scores      |Matriz de componentes principales (si es calculable)
+$call        |Llamada al nombre de la matriz de datos
+
+Puede consultarse la ayuda de esta función usando:
+```{r}
+help("princomp");
+```
+  
+  
+Se, por tanto, este vector de **componentes principales** haciendo que muestre todos los elementos de la respuesta,
+```{r}
+pc = princomp(ventas) 
+pc[1:7]
+```
+
+Para el cálculo de **varianzas _var_** ($\sigma^2$) se puede utilizar el resultado de las desviaciones estandard, indicando el nombre del elemnto elevado al cuadrado, de la siguiente forma:
+
+```{r}
+var = with(pc, sdev^2)
+round(var, digits = 4)
+```
+
+Se genera la variable _sc_ para utilizarlo en Análisis equivalentes, si se sustituye $S_c = \frac{n}{n-1}*S$ cuasi-varianzas.
+
+```{r}
+sc = 1 - (1/n)
+
+```
+De forma que la varianza equivalente y, por tanto, los **Autovalores _var.eq_** ($L_{p \times 1}$) son:
+
+```{r}
+var.eq = (1/sc)*var
+round(var.eq, digits = 4)
+```
+
+Para calcular los coeficientes de los **Autovectores _G_** ($G = (g_1,g_2,...,g_p)$) (transpuesta), 
+
+```{r}
+G = with(pc, loadings)[,]
+round(G, digits = 4)
+```
+
+Y para obtener la **matriz de componentes principales _scores_**:
+
+$Y = (X - 1_n \overline{x}^T)\times G$,  
+
+```{r}
+scores = data.frame(with(pc, scores));
+show(scores)
+
+```
+
+Es necesario cambiar al signo tanto de **_G_** como de **_scores_**. A continuación, se muestra para la primera componente:
+ 
+```{r}
+G[,1] = -G[,1];
+round(G[,1], digits =  4)  
+```
+
+```{r}
+scores[,1] = -scores[,1]
+round(scores[,1], digits =  4) 
+```
+
+El siguiente paso será comprobar que la matriz de componentes principales cumple con las propiedades del teorema,
+
+* El vector de **medias muestrales _m.cp_**  ($\overline{y}$) es igual a cero.  
+* La matriz de **covarianzas muestrales _S.cp_** ($S_y$) tiene como diagonal el vector de autovalores.
+* Las componentes son **incorreladas** de **media cero** y **decreciente de variabiliad**.
+
+```{r}
+m.cp = round(colMeans(scores), digits = 4)
+m.cp
+```
+
+```{r}
+S.cp= round(cov(scores), digits =  4)
+S.cp
+```
+
+Otra comprobación a realizar sobre la matriz de componentes principales es, calcular la **Variación Total _VT.cp_**, que también debe coincidir con la VT de los datos:  
+
+```{r}
+VT.cp = round(sum(diag(cov(scores))),digits = 4)
+VT.cp
+```
+
+##Gráfico Scatter plot
+
+Se genera un gráfico de Matriz de nube puntos (scatter plot matrix). Para ello, en primer lugar se extrae una variable *r* que es la dimensión de la matriz de componentes principales, en segundo lugar se utiliza la función *plot* con una serie de parámetros.
+```{r}
+r = with(scores, range(Comp.1));
+
+plot(scores, pch = 19, cex = 1.2, upper.panel = NULL, col = 'royalblue', main = 'ACP de Ventas', cex.main = 1.3,xlim = r, 
+ylim = r,gap = .15,cex.labels = 1.5,font.labels = 2)
+```
+
+Puede observarse en el gráfico, que prácticamente todos los valores se encuentran sobre una línea horizontal
+
+##Gráfico Coordenadas esféricas
+
+```{r}
+plot(scores/sqrt(var), pch = 19,cex = 1.2, upper.panel = NULL, col = 'mediumseagreen', main = 'Datos esféricos de Ventas',labels = paste0('esf.',c(1:5)),cex.main = 1.3, gap = .15,cex.labels = 1.5,
+font.labels = 2)
+```
+
+
+***
+#Reducción de la dimensión
+
+En este apartado se trabaja con el objetivo del ACP, la reducción de la dimensión para realizar el resumen de los datos.
+En primer lugar, se calcula la proporción de variación y proporción acumulada, mostrándose luego en una única matriz de variación explicada.
+
+```{r}
+prop = S.cp/VT.cp; 
+acum = cumsum(prop)
+table = round(data.frame(S.cp,prop,acum, row.names =NULL ),digits = 4)
+cat('', sep = '\n');
+
+```
+
+**Proporciones**
+```{r}
+prop
+```
+**Proporciones acumuladas**
+```{r}
+acum
+```
+**Matriz de proporción explicada**
+```{r}
+show(table)
+```
+
+##Gráfico de pendiente (Screen plot)
+
+```{r}
+plot(pc, type = 'l', col = 'royalblue', 
+pch = 19, lwd = 2.5, cex = 1.5, 
+main = 'Gráfico de pendiente de autovalores',
+font.lab = 2,
+cex.main = 1.3)
+```
+La **reducción de la dimensión** sería de $q = 1$, ya que $Y1$ explica el 97,67% de la variación.
+
+***
+#Interpretación del análisis
+
+**Y1:  coeficientes constantes (aproximadamente)**
+variación proporcional a nota media  
+  
+$Y1 =  -0.8661X_1-0.0772X_2-0.4939X_3- $   
+
+$\frac{X1+X2+X3}{3}$
+
+**1/3 normalizado:**
+
+```{r}
+1/sqrt(3)
+```
+***
+```{r}
+cons = -colMeans(ventas) %*% G[,1]; 
+colnames(cons) = 'cons';
+cat('', sep = '\n'); round(cons[,], d = 4);
+```
+
+```{r}
+cat('', sep = '\n'); 
+mat<-data.frame(pc.1 = round((1/sqrt(3))*(scores[,1] - cons), digits = 4), n.media = rowMeans(ventas))  
+
+cat('', sep = '\n'); 
+round(G[,2], digits = 4)
+show(mat)
+```
+
+**Y2: Comparación comportamiento libro abierto - cerrado** 
+
+```{r}
+round(G[,3], digits = 4)
+```
+
+
+> **Conclusión**:Conservar únicamente Y1
+
+***
+
+**Matriz de correlación** ( Ventas ; Y1 )
+
+Matriz de correlación entre los datos y las tres columnas de la matriz de componentes principales.
+```{r}
+cat('', sep = '\n'); round(cor(data.frame(ventas,scores[,1:2]))[1:3,1:3], digits = 4) 
+```
+
+## Gráfico ACP
+
+Diseño
+```{r}
+plot(scores, pch = 19, 
+col = 'mediumseagreen', cex = 1.4, 
+xlim = r, ylim = r);
+
+#lineas de referencia
+abline(h = 0, v = 0, lty = '1373', col = 'black',lwd = 1);
+
+#identificar individuos
+lab = c(1:n); 
+text(scores, labels = lab, font = 2, col = 'navy',cex = 1.5, pos = 1) 
+
+```
+Gráfico final
+```{r}
+#seleccionar individuos
+lab.plot = rep('',n);  
+lab.plot[1] = 'Std.1   '
+lab.plot[c(2,28,66,81)] = paste0('Std.',c(2,28,66,81));
+
+# vectorizar cex, pch, col, y pos 
+cex.plot = rep(1.4,n);
+cex.plot[c(1,2,28,66,81)] = 1.6;
+pch.plot = rep(19,n);
+pch.plot[c(1,2,28,66,81)] = 15;
+col.plot = rep('mediumseagreen',n);
+col.plot[c(1,2,28,66,81)] = 'orangered';
+pos.plot = rep(1,n); 
+pos.plot[1] = 3;
+
+plot(scores, pch = pch.plot, col = col.plot, cex = cex.plot, xlim = r, ylim = r, col.lab = 'royalblue', font.lab = 2, cex.lab = 1.2)  ;
+#box(lwd = 2);
+
+#  líneas de referencia
+abline(h = 0, v = 0, lty = '1373', col = 'brown',lwd = 2) 
+points(.0,.0,pch = 16, cex = 1.2, col = 'firebrick1')
+
+# identificar individuos 
+text(scores, labels = lab.plot, font = 2, col = 'navy', cex = 1., pos = pos.plot) 
+
+title('ACP de Ventas', col.main = 'Blue',cex.main = 1.2)
+```
+Vuelta a ventas
+```{r}
+cat('',sep = '\n'); round(G[,1:2], digits = 4);
+cat('',sep = '\n'); ventas[c(1,2), ]
+
+```
+
+
+
+
+

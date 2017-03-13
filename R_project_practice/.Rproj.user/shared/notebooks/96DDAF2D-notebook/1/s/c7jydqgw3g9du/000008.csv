@@ -1,0 +1,2 @@
+"0","# identificar individuos "
+"0","text(scores, labels = lab.plot, font = 2, col = 'navy', cex = 1., pos = pos.plot) "

@@ -1,0 +1,201 @@
+---
+title: "Práctica 1"
+author: "Momentos Muestrales"
+date: "12 de marzo de 2017"
+output:
+  html_notebook:
+    number_sections: yes
+    theme: journal
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#Introducción
+
+Para instalar Real-Statistics hay seguir los siguientes pasos:
+  
+  * Instalar primero los complementos
+    + *Analysis ToolPak*  
+    + *Analysis ToolPak - VBA  *
+    + *Solver*  
+      
+  * Volver a la plantilla EXCEL e instalar:
+    + *RealStats.xlam* (no instalar desde el escritorio)
+  * Al operar con EXCEL, no se deben definir rangos cuyo nombre coincida con el de alguna función. 
+
+```
+![](img/install_realstatistic.gif)
+```  
+Se recomienda cambiar el idioma por defecto de EXCEL a inglés, ya que las funciones de excel de esta práctica están en este idioma. Si se desea ejecutar las funciones en español, en este enlace se encuentra una [Tabla de traducción de fórmulas Excel en español a inglés](http://www.xperimentos.com/2007/03/03/tabla-de-traduccion-de-formulas-excel-en-espanol-a-ingles/).
+
+Para cambiar el idioma hay que seguir los siguientes pasos:
+
+  
+  * Seleccionar *Inglés (Estados Unidos)* y establecer por defecto      
+  * Elegir idiomas de la Ayuda e Interfaz de usuario y establecer como predeterminado *Inglés (Estados Unidos)*  
+  * Si no se localiza el idioma, usar el botón *Agregar*
+
+```
+![](img/cambiaridioma.gif)
+```
+
+#Operaciones Matriciales con EXCEL  
+
+Al realizar operaciones con matrices en EXCEL, es necesario seleccionar el rango de la matriz a calcular, introducir la función matricial en la barra de fórmulas, y ejecutar la función utilizando el operador:  
+  
+```
+CONTROL + MAYÚSCULAS + ENTER
+
+```
+A continuación, se detallan algunas operaciones matriciales básicas para EXCEL.
+
+* Lectura directa de datos:
+
+```
+= {1\2\3;4\5\6;7\8\10}
+```
+
+* Asignar un nombre a una matriz o rango:
+
+```
+Selecionar rango A1:C3-> Menú Fórmulas/Asignar nombre:matriz.A)
+```
+
+* Extraer elementos:
+
+```
+= INDEX(matriz.A;ROW(A1);COLUMN(A1))
+```
+
+* Extraer bloques:
+
+```
+= OFFSET(matriz.A;ROWS(A1:A1);COLUMNS(A1:A1);ROWS(B2:C3);COLUMNS(B2:C3))
+```
+* Suma de Matrices:
+
+```
+= matriz.A + matriz.B 
+```
+* Multiplicación de matrices:
+
+```
+= MMULT(matriz.A;matriz.B)
+```
+
+* Multiplicacción por un número:
+
+```
+= 2*matriz.A 
+```
+* Multiplicación punto a punto:
+
+```
+= matriz.A*matriz.B 
+```
+*  División punto a punto:
+
+```
+= matriz.B/matriz.A 
+```
+
+*  Determinante:
+
+```
+= MDETERM(matriz.A)
+
+```
+
+*  Inversa:
+
+```
+= MINVERSE(matriz.A) 
+
+```
+*  Transpuesta:
+
+```
+= TRANSPOSE(matriz.A) 
+
+```
+
+
+
+#Operaciones Matriciales con Real-Statistic
+
+
+* Extraer bloques:
+
+```
+= SUBRANGE(matriz.A;ROWS(A1:B2);COLUMNS(A1:B2);ROWS(B2:C3);COLUMNS(B2:C3))
+
+```
+* Combinar bloques:
+
+```
+= MERGE(A1:A3;B1:C3) 
+
+```
+*  Determinante:
+
+```
+= DET(matriz.A) 
+
+```
+
+*  Traza:
+
+```
+= TRACE(matriz.A) 
+
+```
+
+#Cálculo de estadísticos resumen  
+  
+Dada una matriz de datos $X_{n \times p} = (x_{ij})$, los elementos de los estadísticos resumen pueden obtenerse mediante las siguientes formulas:      
+  
+* __Vector de medias muestrales__ $(\bar{x})$, para cada columna dada,
+  
+$\bar{x_j} = \frac{1}{n} \sum_{i=1}^{n} x_{ij},\,  j=1,...,p$,
+
+$\bar{x} =\begin{bmatrix} \bar{x_1} \\  \bar{x_2} \\ \vdots \\ \bar{x_3} \end{bmatrix}$
+
+
+* __Matriz de covarianzas muestrales__ $(S_{p \times p})$ , entre pares de columnas $c_j$ y $c_k$:  
+
+ $S_{ij} = \frac{1}{n}\sum_{i=1}^{n} (x_{ij}-\bar{x_j})(x_{ik}-\bar{x_k}); \ \ \  j,k=1,...,p$
+ 
+ $S =\begin{bmatrix} s_{11} & s_{12} & \dots &  s_{1p} \\ s_{21} & s_{22} & \dots &  s_{2p} \\ \vdots & \vdots & \ddots & \vdots\\ s_{p1} & s_{p2} & \dots &  s_{pp} \end{bmatrix}$
+  
+* __Matriz de correlaciones muestrales__ $(R_{p \times p})$ , entre pares de columnas $c_j$ y $c_k$:
+
+ $r_{jk} = \frac{s_{jk}}{\sqrt{s_{jj}s_{kk}}}; \ \ \  j,k=1,...,p$
+
+ $S =\begin{bmatrix} 1 & r_{12} & \dots &  r_{1p} \\ r_{21} & 1 & \dots &  r_{2p} \\ \vdots & \vdots & \ddots & \vdots\\ r_{p1} & r_{p2} & \dots &  1 \end{bmatrix}$
+
+#Ejercicio 1
+
+```
+= TRANSPOSE(MEANCOL(datosn)): Vector de medias; 
+
+= COVP(datosn): Matriz de covarianzas (1/n): Transparencias;
+
+= COV(datosn): Matriz de covarianzas (1/(n-1));
+
+= CORR(datosn): Matriz de correlaciones;
+
+= IDENTITY(ROWS(datosn)): Matriz identidad de orden FILAS(datosn)
+
+= DIAG(matriz): Vector fila o columna de elementos diagonales de una matriz; 
+
+= DIAG(IDENTITY(ROWS(datosn))): vector de unos de orden ROWS(datan);
+
+= DIAGONAL(vector): matriz diagonal con elementos dados por las coordenadas de un vector. 
+
+
+```
+

@@ -1,0 +1,5 @@
+"0","plot(pc, type = 'l', col = 'royalblue', "
+"0","pch = 19, lwd = 2.5, cex = 1.5, "
+"0","main = 'Gráfico de pendiente de autovalores',"
+"0","font.lab = 2,"
+"0","cex.main = 1.3)"

@@ -1,0 +1,6 @@
+"0","prop = S.cp/VT.cp; "
+"0","acum = cumsum(prop)"
+"0","table = round(data.frame(S.cp,prop,acum, row.names =NULL ),digits = 4)"
+"0","cat('', sep = '\n');"
+"1","
+"

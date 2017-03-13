@@ -1,0 +1,12 @@
+El objetivo de la primera práctica es calcular momentos muestrales de matrices (vector de medias muestrales, Matriz de covarianzas muestrales y Matriz de correlaciones muestrales) utilizando la herramienta Microsoft Excel. 
+
+Los valores de estos estadísticos muestrales se consiguen, en primer lugar, empleando las operaciones internas de excel para operaciones con rangos y, en segundo lugar, mediante el Add-in RealStatistic que simplifica la cantidad de pasos necesarios. 
+
+Los archivos a emplear son: companies.txt, cluster.txt y profit.txt
+
+1º Mediante Excel
+
+Se importa el archivo txt a excel
+
+
+

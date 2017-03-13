@@ -1,0 +1,6 @@
+"0","VT.cp = round(sum(diag(cov(scores))),digits = 4)"
+"0","VT.cp"
+"1","[1]"
+"1"," 95.4366"
+"1","
+"

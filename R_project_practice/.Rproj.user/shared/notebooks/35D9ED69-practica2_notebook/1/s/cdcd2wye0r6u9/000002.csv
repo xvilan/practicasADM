@@ -1,0 +1,7 @@
+"0","n = nrow(ventas)"
+"0","print(c('número de filas=',n))"
+"1","[1]"
+"1"," ""número de filas="""
+"1"," ""10""              "
+"1","
+"

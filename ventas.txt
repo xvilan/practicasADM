@@ -1,0 +1,11 @@
+ventas beneficios activos 
+G.M. 26.7 3.3 15.8
+Exxon 38.4 2.4 19.5
+Ford 19.2 1.7 8.4
+Mobil 20.6 1.0 8.2
+Texaco 18.9 0.9 9.4
+Std.Oil 14.8 1.0 7.6
+IBM 19.0 2.7 12.6
+Gulf 14.2 0.8 7.3
+G.E. 13.7 1.1 5.9
+Chrysler 7.7 0.2 2.9

@@ -1,0 +1,6 @@
+"0","vt.ventas= round(sum(diag(S)), digits = 4)"
+"0","vt.ventas"
+"1","[1]"
+"1"," 95.4366"
+"1","
+"

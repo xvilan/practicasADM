@@ -1,0 +1,2 @@
+"0","plot(ventas,pch = 19,cex = 1,upper.panel = NULL,col = 'blue', "
+"0","main = 'Datos de Ventas',cex.main = 1.4,gap = .15,cex.labels = 2,font.labels = 2)"
