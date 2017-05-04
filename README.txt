@@ -1,4 +1,4 @@
-#Prácticas de Análsis de datos multivariantes
+# Prácticas de Análsis de datos multivariantes  
 
 Este código es una web para la entrega de prácticas de la asignatura de Análisis de datos multivariantes, del Máster de Ciencias Actuariales y Financieras (UC3M). 
 
